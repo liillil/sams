@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd">
+
+		<mvc:annotation-driven />
+		
+		<!-- 让springmcv自动识别js、css、图片等静态资源文件 ,不对其进行拦截-->
+		<mvc:default-servlet-handler/>
+		
+		<context:component-scan base-package="cn.java.sams" use-default-filters="false">
+			<context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+			<context:include-filter type="annotation" expression="org.springframework.web.bind.annotation.ControllerAdvice"/>
+			<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Service" />
+		</context:component-scan>
+
+		
+		<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+			<property name="prefix" value="/WEB-INF/jsp/"></property><!-- 前缀 -->
+			<property name="suffix" value=".jsp"></property><!-- 后缀 -->
+		</bean>
+
+		<mvc:view-controller path="/"  view-name="login"/>
+		
+		
+		<mvc:interceptors>
+			<mvc:interceptor>
+				<mvc:mapping path="/**"/><!-- 一个*代表一个层次，例如/*可以拦截/users，但拦截不了/uuu/users 。/**代表多层 即拦截所有 -->
+				<!-- <mvc:exclude-mapping path="/testView"/> 不拦截，排除 -->
+				<mvc:exclude-mapping path="/login"/>
+				<mvc:exclude-mapping path="/"/>
+				<mvc:exclude-mapping path="/resources/**"/>
+				<bean class="cn.java.sams.web.filter.AuthIncepertor"></bean>
+			</mvc:interceptor><!-- 顺序必须为先拦截再排除最后bean -->
+		</mvc:interceptors> 
+		
+		<bean class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+			<property name="exceptionMappings">
+				<props >
+					<prop key="java.lang.RuntimeException">error</prop>
+				</props>
+			</property>
+		</bean>
+</beans>

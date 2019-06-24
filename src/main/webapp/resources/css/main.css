@@ -1,0 +1,61 @@
+@charset "UTF-8";
+
+body{
+	font: 12px/1.2em Microsoft YaHei;
+}
+
+a{
+	text-decoration: none;
+}
+
+.pd3{
+	padding: 3px;
+}
+
+.sams_header{
+	height: 60px; position: relative; overflow: hidden; border-bottom: 1px #95b8e7 solid; background: url(../img/bg_header.jpg) bottom repeat-x; background-size: 100%; z-index: 0;
+	
+}
+
+.header_left{
+	position: absolute;
+	z-index: 1;
+	top: 0px;
+	left: 15px;
+	
+}
+.header_left h1 {
+	color: #fff;
+	font: 25px/25px Verdana;
+}
+
+.header_right{
+	position: absolute;
+	z-index: 1;
+	right: 5px;
+	top:0px;
+	color: #fff;
+	text-align: center;
+}
+.header_right p{
+	line-height: 0.7em;
+}
+.header_right a{
+	color: #fff;
+	margin: 0 5px;
+}
+
+
+
+
+.sams_west{
+	width:160px;
+}
+
+.sams_west .sidebar_tree span.tree-title{
+	width:115px;
+}
+.sams_west .sidebar_tree a{
+	display:block;
+	width:110px;
+}

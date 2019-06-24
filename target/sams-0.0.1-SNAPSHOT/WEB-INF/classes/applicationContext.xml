@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.3.xsd">
+
+		<mvc:annotation-driven />
+
+		<context:component-scan base-package="cn.java.sams">
+			 <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+			<context:exclude-filter type="annotation" expression="org.springframework.web.bind.annotation.ControllerAdvice"/> 
+		</context:component-scan>
+		
+			<context:property-placeholder location="classpath:jdbc.properties"/>
+		<bean class="com.mchange.v2.c3p0.ComboPooledDataSource" id="dataSource">
+			<property name="user" value="${user}"></property>
+			<property name="password" value="${password}"></property>
+			<property name="jdbcUrl" value="${url}"></property>
+			<property name="driverClass" value="${driver}"></property>
+			
+			<property name="initialPoolSize" value="${initialPoolSize}"></property>
+			<property name="maxPoolSize" value="${maxPoolSize}"></property>
+			<property name="minPoolSize" value="${minPoolSize}"></property>
+			<property name="acquireIncrement" value="${acquireIncrement}"></property>
+			<property name="maxStatementsPerConnection" value="${maxStatementsPerConnection}"></property>
+			<property name="maxStatements" value="${maxStatements}"></property>
+		</bean>
+	
+		<bean class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean" id="entityManagerFactory">
+			<property name="dataSource" ref="dataSource"></property>
+			<!-- jpa实现产品 -->
+			<property name="jpaVendorAdapter">
+				<bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter"></bean>
+			</property>
+			<!-- 配置实体类所在包 -->
+			<property name="packagesToScan">
+				<array>
+					<value>cn.java.sams.model</value>
+					<!-- <value>其他包</value> -->
+				</array>
+			</property>
+			<!-- jpa实现的基本配置 -->
+			<property name="jpaProperties">
+				<props>
+					<prop key="hibernate.ejb.naming_strategy">org.hibernate.cfg.ImprovedNamingStrategy</prop>
+					<prop key="hibernate.dialect">org.hibernate.dialect.MySQL5InnoDBDialect</prop>
+					<prop key="hibernate.show_sql">true</prop>
+					<prop key="hibernate.format_sql">true</prop>
+					<prop key="hibernate.hbm2ddl.auto">update</prop>
+					
+					<prop key="hibernate.cache.use_second_level_cache">true</prop>
+					<prop key="hibernate.cache.provider_class">net.sf.ehcache.hibernate.EhCacheProvider</prop>
+					<prop key="hibernate.cache.region.factory_class">org.hibernate.cache.ehcache.EhCacheRegionFactory</prop>
+					<prop key="hibernate.cache.use_query_cache">true</prop>
+				</props>	
+			</property>
+			<property name="sharedCacheMode" value="ENABLE_SELECTIVE"></property>
+		</bean>
+		
+	 	<!-- jpa事务管理 -->
+		<bean class="org.springframework.orm.jpa.JpaTransactionManager" id="transactionManager" >
+			<property name="entityManagerFactory" ref="entityManagerFactory"></property>
+		</bean>
+		
+	<!-- 事务属性 -->
+		<tx:advice transaction-manager="transactionManager" id="txAdvice">
+			<tx:attributes>
+				<tx:method name="get*" read-only="true" />
+				<tx:method name="load*" read-only="true"/>
+				<tx:method name="find*" read-only="true"/>
+				<tx:method name="select*" read-only="true"/>
+				<tx:method name="*" read-only="false" propagation="REQUIRED"/>
+			</tx:attributes>
+		</tx:advice>
+		
+		<aop:config>
+			<aop:pointcut expression="execution(* cn.java.sams.service..*.*(..))" id="aopPointcut"/>
+			<aop:advisor advice-ref="txAdvice" pointcut-ref="aopPointcut"/>
+		</aop:config>
+</beans>
