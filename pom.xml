@@ -108,7 +108,7 @@
 		<dependency><!-- JSR数据有效性检验所需jar包 -->
 			<groupId>org.hibernate.validator</groupId>
 			<artifactId>hibernate-validator</artifactId>
-			<version>6.0.10.Final</version>
+			<version>6.1.0.Final</version>
 		</dependency>
 		<dependency><!-- JSR数据有效性检验所需jar包 -->
 			<groupId>org.hibernate.validator</groupId>
